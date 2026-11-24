@@ -13,6 +13,13 @@ namespace HusOverblik.Web.Client
             // Add device-specific services used by the HusOverblik.Shared project
             builder.Services.AddSingleton<IFormFactor, FormFactor>();
 
+            builder.Services.AddScoped(sp =>
+               new HttpClient
+               {
+                   BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
+               });
+
+
             await builder.Build().RunAsync();
         }
     }

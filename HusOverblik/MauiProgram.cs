@@ -21,12 +21,30 @@ namespace HusOverblik
 
             builder.Services.AddMauiBlazorWebView();
 
+            SetBaseAddress(builder);
+
+            return builder.Build();
+        }
+        
+        private static void SetBaseAddress(MauiAppBuilder builder)
+        {
+#if ANDROID
+            var apiBaseAddress = "https://10.0.2.2:7031/";
+#else
+            var apiBaseAddress = "https://localhost:7031/";
+#endif
+
+            builder.Services.AddSingleton(new HttpClient
+            {
+                BaseAddress = new Uri(apiBaseAddress)
+            });
+
 #if DEBUG
             builder.Services.AddBlazorWebViewDeveloperTools();
             builder.Logging.AddDebug();
 #endif
 
-            return builder.Build();
+
         }
     }
 }
