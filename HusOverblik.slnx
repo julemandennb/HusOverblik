@@ -2,5 +2,7 @@
   <Project Path="HusOverblik.Shared/HusOverblik.Shared.csproj" />
   <Project Path="HusOverblik.Web.Client/HusOverblik.Web.Client.csproj" />
   <Project Path="HusOverblik.Web/HusOverblik.Web.csproj" />
-  <Project Path="HusOverblik/HusOverblik.csproj" />
+  <Project Path="HusOverblik/HusOverblik.csproj">
+    <Deploy Solution="Debug|*" />
+  </Project>
 </Solution>

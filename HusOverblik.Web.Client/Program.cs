@@ -20,7 +20,14 @@ namespace HusOverblik.Web.Client
                });
 
 
+            AddScoped(builder);
+
             await builder.Build().RunAsync();
+        }
+
+        private static void AddScoped(WebAssemblyHostBuilder builder)
+        {
+            builder.Services.AddScoped<ApiService>();
         }
     }
 }
