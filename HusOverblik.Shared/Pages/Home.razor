@@ -1,6 +1,8 @@
 ﻿@page "/"
 @using HusOverblik.Shared.Services
 @inject IFormFactor FormFactor
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
 
 <PageTitle>Home</PageTitle>
 

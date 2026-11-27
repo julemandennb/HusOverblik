@@ -19,6 +19,12 @@ namespace HusOverblik
             // Add device-specific services used by the HusOverblik.Shared project
             builder.Services.AddSingleton<IFormFactor, FormFactor>();
 
+            builder.Services.AddSingleton<ApiService>();
+
+            builder.Services.AddSingleton<IAuthenticationService,MauiAuthenticationService>();
+
+            builder.Services.AddSingleton<AuthenticationStateService>();
+
             builder.Services.AddMauiBlazorWebView();
 
             SetBaseAddress(builder);
@@ -34,7 +40,11 @@ namespace HusOverblik
             var apiBaseAddress = "https://localhost:7031/";
 #endif
 
-            builder.Services.AddSingleton(new HttpClient
+            builder.Services.AddSingleton(new HttpClient(
+               new BearerTokenHandler
+               {
+                   InnerHandler = new HttpClientHandler()
+               })
             {
                 BaseAddress = new Uri(apiBaseAddress)
             });

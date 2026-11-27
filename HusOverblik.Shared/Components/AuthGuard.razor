@@ -1,0 +1,12 @@
+﻿@if (isChecking)
+{
+    <p class="p-3">Checking authentication...</p>
+}
+else if (IsPublic || AuthenticationState.IsAuthenticated)
+{
+    @ChildContent
+}
+else
+{
+    <p class="p-3">Redirecting to login...</p>
+}

@@ -39,7 +39,23 @@ namespace HusOverblik
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                options.Cookie.Name = "HusOverblik.Auth";
+                options.Cookie.HttpOnly = true;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                options.Cookie.SameSite = SameSiteMode.Lax;
+
+                options.LoginPath = "/login";
+                options.AccessDeniedPath = "/access-denied";
+
+                options.ExpireTimeSpan = TimeSpan.FromDays(14);
+                options.SlidingExpiration = true;
+            });
+
             builder.Services.AddAuthorization();
+            builder.Services.AddCascadingAuthenticationState();
+            builder.Services.AddHttpContextAccessor();
 
             // Blazor
             builder.Services.AddRazorComponents()
@@ -47,6 +63,7 @@ namespace HusOverblik
                 .AddInteractiveWebAssemblyComponents();
 
             builder.Services.AddSingleton<IFormFactor, FormFactor>();
+            builder.Services.AddScoped<IAuthenticationService, WebAuthenticationService>();
 
             var app = builder.Build();
 
@@ -79,6 +96,20 @@ namespace HusOverblik
             // /api/auth/logout
             app.MapGroup("/api/auth")
             .MapIdentityApi<ApplicationUser>();
+
+            app.MapPost("/api/auth/logout", async (
+              SignInManager<ApplicationUser> signInManager,
+              [Microsoft.AspNetCore.Mvc.FromBody] object empty) =>
+                {
+                    if (empty != null)
+                    {
+                        await signInManager.SignOutAsync();
+                        return Results.Ok();
+                    }
+
+                    return Results.Unauthorized();
+                })
+          .RequireAuthorization();
 
             // Get currently authenticated user
             app.MapGet("/api/users/me", (ClaimsPrincipal user) =>

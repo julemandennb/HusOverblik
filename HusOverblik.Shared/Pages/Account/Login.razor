@@ -1,0 +1,80 @@
+﻿@page "/login"
+@using HusOverblik.Shared.DTOs
+@using HusOverblik.Shared.Services
+@inject IAuthenticationService AuthenticationService
+@inject NavigationManager Navigation
+
+<PageTitle>Login - HusOverblik</PageTitle>
+
+<div class="container d-flex justify-content-center align-items-center"
+     style="min-height: 80vh;">
+    <div class="card shadow-sm p-4"
+         style="width: 100%; max-width: 420px;">
+
+        <h2 class="text-center mb-4">HusOverblik</h2>
+        <h5 class="text-center mb-4">Sign in to your account</h5>
+
+        <EditForm Model="@loginRequest" OnSubmit="HandleLogin">
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <InputText class="form-control"
+                           @bind-Value="loginRequest.Email"
+                           type="email" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                <InputText class="form-control"
+                           @bind-Value="loginRequest.Password"
+                           type="password" />
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(errorMessage))
+            {
+                <div class="alert alert-danger">
+                    @errorMessage
+                </div>
+            }
+
+            <button type="submit"
+                    class="btn btn-primary w-100"
+                    disabled="@isLoading">
+                @(isLoading ? "Signing in..." : "Sign in")
+            </button>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private LoginRequest loginRequest = new();
+    private string? errorMessage;
+    private bool isLoading;
+
+    private async Task HandleLogin()
+    {
+        isLoading = true;
+        errorMessage = null;
+
+        try
+        {
+            var success = await AuthenticationService.LoginAsync(loginRequest);
+
+            if (success)
+            {
+                Navigation.NavigateTo("/", forceLoad: true);
+            }
+            else
+            {
+                errorMessage = "Invalid email or password.";
+            }
+        }
+        catch
+        {
+            errorMessage = "Unable to connect to the server.";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+}
